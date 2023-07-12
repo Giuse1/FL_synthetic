@@ -40,6 +40,10 @@ def get_config():
     os.makedirs(f"{config.folder_logger}/class_statistics/train", exist_ok=True)
     os.makedirs(f"{config.folder_logger}/class_statistics/test_real", exist_ok=True)
     os.makedirs(f"{config.folder_logger}/class_statistics/test_synthetic", exist_ok=True)
+    os.makedirs(f"{config.folder_logger}/class_statistics/test_synthetic", exist_ok=True)
+    os.makedirs(f"{config.folder_logger}/class_statistics/validation_before_training", exist_ok=True)
+    os.makedirs(f"{config.folder_logger}/class_statistics/validation_after_training", exist_ok=True)
+
 
     print(f"total_num_users: {config.total_num_users}")
     print(f"users_per_round: {config.users_per_round}")

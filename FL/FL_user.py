@@ -51,7 +51,6 @@ class User(object):
             local_loss = 0.0
             for (i, data) in enumerate(self.trainloader):
                 images, labels = data[0].to(self.device), data[1].to(self.device)
-                print(images.shape)
                 optimizer.zero_grad()
                 log_probs = model(images)
                 loss = self.criterion(log_probs, labels)
