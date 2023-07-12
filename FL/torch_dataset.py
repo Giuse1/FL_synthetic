@@ -20,6 +20,7 @@ torch.backends.cudnn.benchmark = False
 NUM_WORKERS = 2
 PIN_MEMORY = True
 
+
 class FolderDataset2(Dataset):
 
     def __init__(self, config, folder, transform):
@@ -49,7 +50,7 @@ class FolderDataset2(Dataset):
 
     def __getitem__(self, idx):
 
-        image, label = self.data[idx],  self.targets[idx]
+        image, label = self.data[idx], self.targets[idx]
         image = Image.fromarray(image)
 
         if self.transform is not None:
@@ -100,11 +101,10 @@ def get_dataset(config):
         raise Exception("Wrong dataset")
 
     transform = transforms.Compose(
-                [transforms.RandomHorizontalFlip(),
-                 transforms.Resize(224),
-                 transforms.ToTensor(),
-                 transforms.Normalize(mean, std)])
-
+        [transforms.RandomHorizontalFlip(),
+         transforms.Resize(224),
+         transforms.ToTensor(),
+         transforms.Normalize(mean, std)])
 
     trainset = FolderDataset2(config, "train", transform)
     testset_real = FolderDataset2(config, "test", transform)
@@ -116,16 +116,32 @@ def get_dataset(config):
                                                        num_workers=NUM_WORKERS, pin_memory=PIN_MEMORY)
 
     if config.data_distribution == "iid":
-        trainloader_list = get_train_iid(config, trainset)
+        trainloader_list, valloader_list = get_train_iid(config, trainset)
     elif config.data_distribution == "non_iid_1":
-        trainloader_list = get_train_one_class_per_user(config, trainset)
+        trainloader_list, valloader_list = get_train_one_class_per_user(config, trainset)
     elif config.data_distribution == "non_iid_2":
-        trainloader_list = get_train_two_classes_per_user(config, trainset)
+        trainloader_list, valloader_list = get_train_two_classes_per_user(config, trainset)
 
     else:
         raise Exception("Wrong data distribution")
 
-    return trainloader_list, testloader_real, testloader_synthetic
+    return trainloader_list, valloader_list, testloader_real, testloader_synthetic
+
+
+def get_subset(set, indexes, config):
+
+    if config.validation_node:
+        random.shuffle(indexes)
+        len_train = int(0.85*len(indexes))
+        train_indexes = indexes[:len_train]
+        val_indexes = indexes[len_train:]
+        trainset = Subset(set, train_indexes)
+        valset = Subset(set, val_indexes)
+    else:
+        trainset = Subset(set, indexes)
+        valset = None
+
+    return trainset, valset
 
 
 def get_train_iid(config, trainset):
@@ -134,13 +150,19 @@ def get_train_iid(config, trainset):
     random_list = random.sample(range(total_data), total_data)
     data_per_client = int(total_data / config.total_num_users)
     trainloader_list = []
+    valloader_list = [None]*config.total_num_users
 
     for i in range(config.total_num_users):
         indexes = random_list[i * data_per_client: (i + 1) * data_per_client]
-        d = Subset(trainset, indexes)
-        trainloader_list.append(torch.utils.data.DataLoader(d, batch_size=config.batch_size, shuffle=True, num_workers=NUM_WORKERS, pin_memory=PIN_MEMORY))
-
-    return trainloader_list
+        train_ds, val_ds = get_subset(trainset, indexes, config)
+        trainloader_list.append(
+            torch.utils.data.DataLoader(train_ds, batch_size=config.batch_size, shuffle=True, num_workers=NUM_WORKERS,
+                                        pin_memory=PIN_MEMORY))
+        if val_ds:
+            valloader_list[i] = torch.utils.data.DataLoader(val_ds, batch_size=config.batch_size, shuffle=False,
+                                            num_workers=NUM_WORKERS,
+                                            pin_memory=PIN_MEMORY)
+    return trainloader_list, valloader_list
 
 
 def get_train_one_class_per_user(config, trainset):
@@ -150,18 +172,26 @@ def get_train_one_class_per_user(config, trainset):
 
     target_indices = np.arange(len(targets))
     trainloader_list = []
+    valloader_list = [None]*config.total_num_users
+
     for c in range(n_classes):
         idx_class = targets == c
         train_idx = target_indices[idx_class]
 
         # here code to split dataset if you want more than 10 clients
 
-        d = Subset(trainset, train_idx)
-        trainloader_list.append(torch.utils.data.DataLoader(d, batch_size=config.batch_size, shuffle=True, num_workers=NUM_WORKERS, pin_memory=PIN_MEMORY))
+        train_ds, val_ds = get_subset(trainset, train_idx, config)
 
-        print(len(d))
+        trainloader_list.append(
+            torch.utils.data.DataLoader(train_ds, batch_size=config.batch_size, shuffle=True, num_workers=NUM_WORKERS,
+                                        pin_memory=PIN_MEMORY))
 
-    return trainloader_list
+        if val_ds:
+            valloader_list[c] = torch.utils.data.DataLoader(val_ds, batch_size=config.batch_size, shuffle=False,
+                                            num_workers=NUM_WORKERS,
+                                            pin_memory=PIN_MEMORY)
+
+    return trainloader_list, valloader_list
 
 
 def get_train_two_classes_per_user(config, trainset):
@@ -176,6 +206,8 @@ def get_train_two_classes_per_user(config, trainset):
 
     target_indices = np.arange(len(targets))
     trainloader_list = []
+    valloader_list = [None]*config.total_num_users
+
     len_dict = {}
     for i in range(config.total_num_users):
 
@@ -200,12 +232,19 @@ def get_train_two_classes_per_user(config, trainset):
 
         # here code to split dataset if you want more than 10 clients
         train_idx_2_classes = np.concatenate(train_idx_2_classes)
-        d = Subset(trainset, train_idx_2_classes)
-        trainloader_list.append(torch.utils.data.DataLoader(d, batch_size=config.batch_size, shuffle=True,num_workers=NUM_WORKERS, pin_memory=PIN_MEMORY))
+        train_ds, val_ds = get_subset(trainset, train_idx_2_classes, config)
 
-        print(len(d))
+        trainloader_list.append(
+            torch.utils.data.DataLoader(train_ds, batch_size=config.batch_size, shuffle=True, num_workers=NUM_WORKERS,
+                                        pin_memory=PIN_MEMORY))
 
-    return trainloader_list
+        if val_ds:
+            valloader_list[i]=torch.utils.data.DataLoader(val_ds, batch_size=config.batch_size, shuffle=False,
+                                            num_workers=NUM_WORKERS,
+                                            pin_memory=PIN_MEMORY)
+
+
+    return trainloader_list, valloader_list
 
 # class FolderDataset(Dataset):
 #     """Face Landmarks dataset."""

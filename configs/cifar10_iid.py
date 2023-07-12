@@ -7,6 +7,8 @@ def get_config():
     config = ml_collections.ConfigDict()
 
     config.seed = 0
+    config.root = "/home/giuse/Desktop/FL"  # "/home/giuse/Desktop/FL"  # "FL_diffusion"  # todo
+
     config.device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device('cpu')
 
     config.total_num_users = 10
@@ -16,20 +18,22 @@ def get_config():
     config.local_epochs = 1
 
     config.optimizer = "Adam"
-    config.batch_size = 64
-    config.root = "FL_diffusion" # "/home/giuse/Desktop/FL"  # "FL_diffusion"  # todo
-
     config.learning_rate = 0.0001
     config.decay = 1  # to consider
 
+    config.batch_size = 1 # todo
+
     config.data_distribution = "iid"
-    config.model = "vgg11"
     config.dataset = "cifar10"
 
-    config.cfg_scale = 1
-    config.corrector = "langevin" # to consider
+    config.model = "vgg11"
 
-    config.folder_logger = f"{config.root}/reports/{config.dataset}/" \
+    config.cfg_scale = 1
+    config.corrector = "langevin"  # to consider
+
+    config.validation_node = False
+
+    config.folder_logger = f"{config.root}/reports/{config.dataset}/val_node_{config.validation_node}/" \
                            f"{config.data_distribution}_{config.model}_{config.optimizer}_{config.learning_rate}/" \
                            f"cfg{config.cfg_scale}"
 

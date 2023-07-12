@@ -27,8 +27,8 @@ def train_model(config):
     list_val_loss_syn, list_val_acc_syn = [], []
     server_logger = utils.setup_logger("server_logger", f"{config.folder_logger}/server.log", isServer=True)
 
-    trainloader_list, testloader_real, testloader_synthetic = datasets.get_dataset(config)
-    list_users = [User(dataloader=trainloader_list[idx], index=idx, config=config) for idx in
+    trainloader_list, valloader_list, testloader_real, testloader_synthetic = datasets.get_dataset(config)
+    list_users = [User(trainloader=trainloader_list[idx],valloader=valloader_list[idx], index=idx, config=config) for idx in
                   range(config.total_num_users)]
 
     global_model = model.init_model(config)
