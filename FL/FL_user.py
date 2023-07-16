@@ -99,8 +99,8 @@ class User(object):
                 labels_true_app(labels.cpu().numpy())
                 labels_predicted_app(preds.cpu().numpy())
 
-            epoch_loss = test_loss / len(self.valloader.dataset)
-            epoch_acc = test_corrects / len(self.valloader.dataset)
+            epoch_loss = test_loss # / len(self.valloader.dataset)
+            epoch_acc = test_corrects # / len(self.valloader.dataset)
 
             self.logger.info(f"{round_},validation_{step},{epoch_loss},{epoch_acc},{len(self.valloader.dataset)}")
             np.savez_compressed(

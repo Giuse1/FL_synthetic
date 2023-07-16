@@ -17,7 +17,7 @@ def get_config():
 
     config.optimizer = "Adam"
     config.batch_size = 64
-    config.root = "FL_diffusion" # "/home/giuse/Desktop/FL"  # "FL_diffusion"  # todo
+    config.root = "FL_diffusion" # "/home/giuse/Desktop/FL"  # "FL_diffusion" /content/drive/MyDrive # todo
 
     config.learning_rate = 0.0001
     config.decay = 1
