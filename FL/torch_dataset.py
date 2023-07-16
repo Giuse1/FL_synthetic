@@ -100,15 +100,20 @@ def get_dataset(config):
     else:
         raise Exception("Wrong dataset")
 
-    transform = transforms.Compose(
+    train_transform = transforms.Compose(
         [transforms.RandomHorizontalFlip(),
          transforms.Resize(224),
          transforms.ToTensor(),
          transforms.Normalize(mean, std)])
 
-    trainset = FolderDataset2(config, "train", transform)
-    testset_real = FolderDataset2(config, "test", transform)
-    testset_synthetic = FolderDataset2(config, "synthetic", transform)
+    test_transform = transforms.Compose(
+        [transforms.Resize(224),
+         transforms.ToTensor(),
+         transforms.Normalize(mean, std)])
+
+    trainset = FolderDataset2(config, "train", train_transform)
+    testset_real = FolderDataset2(config, "test", test_transform)
+    testset_synthetic = FolderDataset2(config, "synthetic", test_transform)
 
     testloader_real = torch.utils.data.DataLoader(testset_real, batch_size=config.batch_size, shuffle=False,
                                                   num_workers=NUM_WORKERS, pin_memory=PIN_MEMORY)
