@@ -7,8 +7,6 @@ def get_config():
     config = ml_collections.ConfigDict()
 
     config.seed = 0
-    config.root = "/home/giuse/Desktop/FL"  # "/home/giuse/Desktop/FL"  # "FL_diffusion"  # todo
-
     config.device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device('cpu')
 
     config.total_num_users = 10
@@ -18,20 +16,21 @@ def get_config():
     config.local_epochs = 1
 
     config.optimizer = "Adam"
+    config.batch_size = 64
+    config.root = "FL_diffusion" # "/home/giuse/Desktop/FL"  # "FL_diffusion"  # todo
+
     config.learning_rate = 0.0001
-    config.decay = 1  # to consider
+    config.decay = 1
 
-    config.batch_size = 1 # todo
-
-    config.data_distribution = "iid"
+    config.data_distribution = "non_iid_1"
+    config.model = "resnet18"
     config.dataset = "cifar10"
 
-    config.model = "vgg11"
-
     config.cfg_scale = 1
-    config.corrector = "langevin"  # to consider
-
+    config.corrector = "langevin"
+    
     config.validation_node = False
+
 
     config.folder_logger = f"{config.root}/reports/{config.dataset}/val_node_{config.validation_node}/" \
                            f"{config.data_distribution}_{config.model}_{config.optimizer}_{config.learning_rate}/" \
@@ -40,12 +39,6 @@ def get_config():
     os.makedirs(f"{config.folder_logger}/class_statistics/train", exist_ok=True)
     os.makedirs(f"{config.folder_logger}/class_statistics/test_real", exist_ok=True)
     os.makedirs(f"{config.folder_logger}/class_statistics/test_synthetic", exist_ok=True)
-    os.makedirs(f"{config.folder_logger}/class_statistics/test_synthetic", exist_ok=True)
-
-    if config.validation_node:
-        os.makedirs(f"{config.folder_logger}/class_statistics/validation_before_training", exist_ok=True)
-        os.makedirs(f"{config.folder_logger}/class_statistics/validation_after_training", exist_ok=True)
-
 
     print(f"total_num_users: {config.total_num_users}")
     print(f"users_per_round: {config.users_per_round}")
