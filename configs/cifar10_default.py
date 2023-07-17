@@ -33,3 +33,26 @@ def get_default_config():
 
 
     return config
+
+def plot_config(config):
+
+    os.makedirs(f"{config.folder_logger}/class_statistics/train", exist_ok=True)
+    os.makedirs(f"{config.folder_logger}/class_statistics/test_real", exist_ok=True)
+    os.makedirs(f"{config.folder_logger}/class_statistics/test_synthetic", exist_ok=True)
+
+    os.makedirs(f"{config.folder_logger}/class_statistics/validation_before_training", exist_ok=True)
+    os.makedirs(f"{config.folder_logger}/class_statistics/validation_after_training", exist_ok=True)
+
+
+
+    print(f"total_num_users: {config.total_num_users}")
+    print(f"users_per_round: {config.users_per_round}")
+    print(f"num_rounds: {config.num_rounds}")
+    print(f"local_epochs: {config.local_epochs}")
+    print(f"optimizer: {config.optimizer}")
+    print(f"batch_size: {config.batch_size}")
+    print(f"learning_rate: {config.learning_rate}")
+    print(f"decay: {config.decay}")
+    print(f"data_distribution: {config.data_distribution}")
+    print(f"model: {config.model}")
+    print(f"node validation: {config.validation_node}")
