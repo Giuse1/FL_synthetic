@@ -17,8 +17,8 @@ def get_default_config():
     config.num_rounds = 100
     config.local_epochs = 1
 
-    config.optimizer = "SGD"
-    config.learning_rate = 0.01
+    config.optimizer = "Adam"
+    config.learning_rate = 0.0001
     config.decay = 1  # to consider
 
     config.batch_size = 64 # todo
