@@ -13,6 +13,7 @@ from FL import FL_train
 
 FLAGS = flags.FLAGS
 config_flags.DEFINE_config_file("config", None, "Training configuration.", lock_config=True)
+
 flags.mark_flags_as_required(["config"])
 
 

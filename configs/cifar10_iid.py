@@ -3,8 +3,11 @@ import torch
 import os
 
 
+from configs.cifar10_default import get_default_config
+
+
 def get_config():
-    config = ml_collections.ConfigDict()
+    config = get_default_config()
 
     config.seed = 0
     config.root = "/home/giuse/Desktop/FL"  # "/home/giuse/Desktop/FL"  # "FL_diffusion"  # todo
@@ -21,7 +24,7 @@ def get_config():
     config.learning_rate = 0.0001
     config.decay = 1  # to consider
 
-    config.batch_size = 1 # todo
+    config.batch_size = 64 # todo
 
     config.data_distribution = "iid"
     config.dataset = "cifar10"
