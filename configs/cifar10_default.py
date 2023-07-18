@@ -29,7 +29,6 @@ def get_default_config():
     config.cfg_scale = 1
     config.corrector = "langevin"  # to consider
 
-    config.validation_node = False
 
 
     return config
