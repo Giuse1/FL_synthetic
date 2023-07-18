@@ -11,6 +11,9 @@ def get_config():
     config.data_distribution = "iid"
     config.model = "resnet18"
 
+    config.validation_node = False
+
+
     config.folder_logger = f"{config.root}/reports/{config.dataset}/val_node_{config.validation_node}/" \
                            f"{config.data_distribution}_{config.model}_{config.optimizer}_{config.learning_rate}/" \
                            f"cfg{config.cfg_scale}"
