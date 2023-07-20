@@ -13,8 +13,13 @@ from FL import FL_train
 
 FLAGS = flags.FLAGS
 config_flags.DEFINE_config_file("config", None, "Training configuration.", lock_config=True)
+# flags.DEFINE_string("model", None, "model.")
+# flags.DEFINE_string("data_distribution", None, "data distribution.")
+# flags.DEFINE_string("validation_node", None, "validation at no.")
 
 flags.mark_flags_as_required(["config"])
+
+
 
 
 def main(argv):

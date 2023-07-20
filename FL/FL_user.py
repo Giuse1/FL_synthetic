@@ -32,7 +32,10 @@ class User(object):
 
     def update_weights(self, model, round_):
 
-        # compute metrics on valloaader
+        if self.config.data_distribution != "iid" and round_ >= self.config.T_star:
+            print("Freezing BN layers")
+            model = freeze_stats(model)
+
         if self.valloader is not None:
             self.test_model(model, round_, "before_training")
 
@@ -108,3 +111,19 @@ class User(object):
                 true=np.array(labels_true), predicted=np.array(labels_predicted))
 
             return epoch_loss, epoch_acc
+
+
+def freeze_stats(model):
+
+    for module in model.modules():
+        # print(module)
+        if isinstance(module, nn.BatchNorm2d):
+            if hasattr(module, 'weight'):
+                module.track_running_stats = False
+                print(module)
+                # module.weight.requires_grad_(False)
+            # if hasattr(module, 'bias'):
+            #     # module.bias.requires_grad_(False)
+            #     print(module)
+
+    return model

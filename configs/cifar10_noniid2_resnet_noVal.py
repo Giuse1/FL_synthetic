@@ -5,7 +5,7 @@ def get_config():
     config = get_default_config()
 
     config.data_distribution = "non_iid_2"
-    config.model = "vgg11"
+    config.model = "resnet18"
 
     config.validation_node = False
     config.T_star = 50

@@ -5,9 +5,9 @@ def get_config():
     config = get_default_config()
 
     config.data_distribution = "non_iid_2"
-    config.model = "vgg11"
+    config.model = "resnet18"
 
-    config.validation_node = False
+    config.validation_node = True
     config.T_star = 50
 
     config.folder_logger = get_config_folder(config)
