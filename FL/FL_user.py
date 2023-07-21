@@ -32,9 +32,9 @@ class User(object):
 
     def update_weights(self, model, round_):
 
-        if self.config.data_distribution != "iid" and round_ >= self.config.T_star:
-            print("Freezing BN layers")
-            model = freeze_stats(model)
+        # if self.config.data_distribution != "iid" and round_ >= self.config.T_star:
+        #     print("Freezing BN layers")
+        #     freeze_stats(model)
 
         if self.valloader is not None:
             self.test_model(model, round_, "before_training")
@@ -124,6 +124,7 @@ def freeze_stats(model):
             if hasattr(module, 'bias'):
                 module.bias.requires_grad_(False)
             module.eval()
+
 def freeze_stats_(model):
 
     for module in model.modules():

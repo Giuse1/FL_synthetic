@@ -8,7 +8,6 @@ def get_config():
     config.model = "vgg11"
 
     config.validation_node = False
-    config.T_star = 50
 
     config.folder_logger = get_config_folder(config)
 

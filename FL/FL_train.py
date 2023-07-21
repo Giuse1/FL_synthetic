@@ -37,6 +37,10 @@ def train_model(config):
         print('-' * 10)
         print('Epoch {}/{}'.format(round_, config.num_rounds - 1))
 
+        if config.data_distribution != "iid" and round_ >= config.T_star:
+            print("Freezing BN layers")
+            freeze_stats(model)
+
         # train
         local_weights = []
         samples_per_client = []
@@ -73,6 +77,17 @@ def train_model(config):
 
         server_logger.info(f"{round_},validation,{val_loss_real},{val_accuracy_real},{val_loss_syn},{val_accuracy_syn}")
 
+
+def freeze_stats(model):
+    for module in model.modules():
+        # print(module)
+        if isinstance(module, nn.BatchNorm2d):
+            module.track_running_stats = False
+            if hasattr(module, 'weight'):
+                module.weight.requires_grad_(False)
+            if hasattr(module, 'bias'):
+                module.bias.requires_grad_(False)
+            module.eval()
 
 def model_evaluation(config, model, testloader, round_, ds):
     labels_true = []
