@@ -113,14 +113,25 @@ class User(object):
             return epoch_loss, epoch_acc
 
 
+
 def freeze_stats(model):
+    for module in model.modules():
+        # print(module)
+        if isinstance(module, nn.BatchNorm2d):
+            module.track_running_stats = False
+            if hasattr(module, 'weight'):
+                module.weight.requires_grad_(False)
+            if hasattr(module, 'bias'):
+                module.bias.requires_grad_(False)
+            module.eval()
+def freeze_stats_(model):
 
     for module in model.modules():
         # print(module)
         if isinstance(module, nn.BatchNorm2d):
-            if hasattr(module, 'weight'):
+            # if hasattr(module, 'weight'):
                 module.track_running_stats = False
-                print(module)
+                # print(module)
                 # module.weight.requires_grad_(False)
             # if hasattr(module, 'bias'):
             #     # module.bias.requires_grad_(False)
