@@ -39,7 +39,7 @@ def train_model(config):
 
         if config.data_distribution != "iid" and round_ >= config.T_star:
             print("Freezing BN layers")
-            freeze_stats(model)
+            freeze_stats(global_model)
 
         # train
         local_weights = []
@@ -83,10 +83,10 @@ def freeze_stats(model):
         # print(module)
         if isinstance(module, nn.BatchNorm2d):
             module.track_running_stats = False
-            if hasattr(module, 'weight'):
-                module.weight.requires_grad_(False)
-            if hasattr(module, 'bias'):
-                module.bias.requires_grad_(False)
+            # if hasattr(module, 'weight'):
+            #     module.weight.requires_grad_(False)
+            # if hasattr(module, 'bias'):
+            #     module.bias.requires_grad_(False)
             module.eval()
 
 def model_evaluation(config, model, testloader, round_, ds):
