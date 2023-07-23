@@ -1,5 +1,4 @@
 import os
-
 import utils
 from FL.FL_user import User
 import copy
@@ -127,10 +126,15 @@ def model_evaluation(config, model, testloader, round_, ds):
 def average_weights(w, samples_per_client):
     w_avg = copy.deepcopy(w[0])
     for key in w_avg.keys():
-        for i in range(0, len(w)):
-            if i == 0:
-                w_avg[key] = torch.true_divide(w[i][key], 1 / samples_per_client[i])
-            else:
-                w_avg[key] += torch.true_divide(w[i][key], 1 / samples_per_client[i])
-        w_avg[key] = torch.true_divide(w_avg[key], sum(samples_per_client))
+
+        if "num_batches_tracked" in key:
+            w_avg[key] = torch.tensor(0)
+
+        else:
+            for i in range(0, len(w)):
+                if i == 0:
+                    w_avg[key] = torch.true_divide(w[i][key], 1 / samples_per_client[i])
+                else:
+                    w_avg[key] += torch.true_divide(w[i][key], 1 / samples_per_client[i])
+            w_avg[key] = torch.true_divide(w_avg[key], sum(samples_per_client))
     return w_avg
