@@ -9,6 +9,8 @@ def get_default_config():
     config.seed = 0
     config.root = "/home/giuse/Desktop/FL"  # "/home/giuse/Desktop/FL"  # "FL_diffusion"  # todo
 
+    config.stats_before = False
+
     config.device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device('cpu')
 
     config.total_num_users = 10
@@ -18,10 +20,10 @@ def get_default_config():
     config.local_epochs = 1
 
     config.optimizer = "Adam"
-    config.learning_rate = 0.0001
+    config.learning_rate = 0.1
     config.decay = 1  # to consider
 
-    config.batch_size = 64  # todo
+    config.batch_size = 1  # todo
 
     config.dataset = "cifar10"
 
@@ -32,13 +34,15 @@ def get_default_config():
 
 
 def get_config_folder(config):
-    if config.data_distribution == "iid":
-        s = f"{config.root}/reports/{config.dataset}/val_node_{config.validation_node}/" \
-            f"{config.data_distribution}_{config.model}_{config.optimizer}_{config.learning_rate}/" \
-            f"cfg{config.cfg_scale}"
-    else:
-        s = f"{config.root}/reports/{config.dataset}/val_node_{config.validation_node}/" \
+
+    try:
+        s = f"{config.root}/reports/{config.dataset}/stats_before_{config.stats_before}/val_node_{config.validation_node}/" \
             f"{config.data_distribution}_Tstar_{config.T_star}_{config.model}_{config.optimizer}_{config.learning_rate}/" \
+            f"cfg{config.cfg_scale}"
+    except:
+
+        s = f"{config.root}/reports/{config.dataset}/stats_before_{config.stats_before}/val_node_{config.validation_node}/" \
+            f"{config.data_distribution}_{config.model}_{config.optimizer}_{config.learning_rate}/" \
             f"cfg{config.cfg_scale}"
 
     return s

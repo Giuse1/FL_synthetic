@@ -8,6 +8,8 @@ def get_config():
     config.model = "resnet18"
 
     config.validation_node = True
+    config.T_star = 25
+
 
     config.folder_logger = get_config_folder(config)
 

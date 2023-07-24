@@ -27,7 +27,8 @@ def train_model(config):
     server_logger = utils.setup_logger("server_logger", f"{config.folder_logger}/server.log", isServer=True)
 
     trainloader_list, valloader_list, testloader_real, testloader_synthetic = datasets.get_dataset(config)
-    list_users = [User(trainloader=trainloader_list[idx],valloader=valloader_list[idx], index=idx, config=config) for idx in
+    list_users = [User(trainloader=trainloader_list[idx], valloader=valloader_list[idx], index=idx, config=config) for
+                  idx in
                   range(config.total_num_users)]
 
     global_model = model.init_model(config)
@@ -36,9 +37,12 @@ def train_model(config):
         print('-' * 10)
         print('Epoch {}/{}'.format(round_, config.num_rounds - 1))
 
-        if config.data_distribution != "iid" and round_ >= config.T_star:
-            print("Freezing BN layers")
-            freeze_stats(global_model)
+        try:
+            if round_ >= config.T_star:
+                print("Freezing BN layers")
+                freeze_stats(global_model)
+        except:
+            pass
 
         # train
         local_weights = []
@@ -58,6 +62,9 @@ def train_model(config):
 
         # test on original, i.e., real, testset
 
+        if config.stats_before == True:
+            stats(trainloader_list, global_model, config.device)
+
         val_loss_real, val_accuracy_real = model_evaluation(config=config, model=global_model,
                                                             testloader=testloader_real, round_=round_,
                                                             ds="test_real")
@@ -72,7 +79,7 @@ def train_model(config):
         list_val_acc_syn.append(val_accuracy_syn)
 
         print('TEST REAL: Loss: {:.4f} Acc: {:.4f}'.format(val_loss_real, val_accuracy_real))
-        print('TEST SYNTHETIC: Loss: {:.4f} Acc: {:.4f}'.format(val_loss_syn,val_accuracy_syn))
+        print('TEST SYNTHETIC: Loss: {:.4f} Acc: {:.4f}'.format(val_loss_syn, val_accuracy_syn))
 
         server_logger.info(f"{round_},validation,{val_loss_real},{val_accuracy_real},{val_loss_syn},{val_accuracy_syn}")
 
@@ -86,7 +93,19 @@ def freeze_stats(model):
             #     module.weight.requires_grad_(False)
             # if hasattr(module, 'bias'):
             #     module.bias.requires_grad_(False)
-            module.eval()
+            module.eval()  # todo not necessary
+
+def stats(train_dataloader_list, global_model, device):
+    with torch.no_grad():
+        global_model.train(True)
+
+        for dl in train_dataloader_list:
+            for (i, data) in enumerate(dl):
+                inputs, labels = data[0].to(device), data[1].to(device)
+                model(inputs)
+
+    return global_model
+
 
 def model_evaluation(config, model, testloader, round_, ds):
     labels_true = []
@@ -113,7 +132,6 @@ def model_evaluation(config, model, testloader, round_, ds):
             labels_true_app(labels.cpu().numpy())
             labels_predicted_app(preds.cpu().numpy())
 
-
         epoch_loss = running_loss / len(testloader.dataset)
         epoch_acc = running_corrects / len(testloader.dataset)
 
@@ -128,7 +146,8 @@ def average_weights(w, samples_per_client):
     for key in w_avg.keys():
 
         if "num_batches_tracked" in key:
-            w_avg[key] = torch.tensor(0)
+            w_avg[key] = torch.tensor(
+                0)  # does not influence anything, as resnet18 uses momentum and not num_batch_tracked
 
         else:
             for i in range(0, len(w)):
