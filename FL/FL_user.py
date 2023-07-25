@@ -3,6 +3,7 @@ import numpy as np
 import random
 import torch.nn as nn
 import utils
+from operator import itemgetter
 
 SEED = 0
 random.seed(SEED)
@@ -20,6 +21,8 @@ class User(object):
         self.trainloader = trainloader
         self.valloader = valloader
 
+        self.classes = list(set(list(itemgetter(*self.trainloader.dataset.indices)(self.trainloader.dataset.dataset.targets))))
+
         self.id = index
         self.device = config.device
         self.criterion = nn.CrossEntropyLoss()
@@ -31,10 +34,6 @@ class User(object):
         self.config = config
 
     def update_weights(self, model, round_):
-
-        # if self.config.data_distribution != "iid" and round_ >= self.config.T_star:
-        #     print("Freezing BN layers")
-        #     freeze_stats(model)
 
         if self.valloader is not None:
             self.test_model(model, round_, "before_training")
@@ -56,6 +55,12 @@ class User(object):
                 images, labels = data[0].to(self.device), data[1].to(self.device)
                 optimizer.zero_grad()
                 log_probs = model(images)
+
+                if len(self.classes) != 10:
+                    label_mask = torch.zeros(10, device=self.config.device)
+                    label_mask[self.classes] = 1
+                    log_probs = log_probs.masked_fill(label_mask == 0, 0)
+
                 loss = self.criterion(log_probs, labels)
                 _, preds = torch.max(log_probs, 1)
                 local_correct += torch.sum(preds == labels).cpu().numpy()

@@ -33,6 +33,10 @@ def train_model(config):
 
     global_model = model.init_model(config)
 
+    if config.stats_before == True:
+        print("remove tracking")
+        freeze_stats(global_model)
+
     for round_ in range(config.num_rounds):
         print('-' * 10)
         print('Epoch {}/{}'.format(round_, config.num_rounds - 1))
@@ -63,6 +67,7 @@ def train_model(config):
         # test on original, i.e., real, testset
 
         if config.stats_before == True:
+            print("computing stats")
             stats(trainloader_list, global_model, config.device)
 
         val_loss_real, val_accuracy_real = model_evaluation(config=config, model=global_model,
@@ -102,7 +107,7 @@ def stats(train_dataloader_list, global_model, device):
         for dl in train_dataloader_list:
             for (i, data) in enumerate(dl):
                 inputs, labels = data[0].to(device), data[1].to(device)
-                model(inputs)
+                global_model(inputs)
 
     return global_model
 

@@ -20,10 +20,10 @@ def get_default_config():
     config.local_epochs = 1
 
     config.optimizer = "Adam"
-    config.learning_rate = 0.1
+    config.learning_rate = 0.0001  # todo
     config.decay = 1  # to consider
 
-    config.batch_size = 1  # todo
+    config.batch_size = 64  # todo
 
     config.dataset = "cifar10"
 
@@ -36,12 +36,12 @@ def get_default_config():
 def get_config_folder(config):
 
     try:
-        s = f"{config.root}/reports/{config.dataset}/stats_before_{config.stats_before}/val_node_{config.validation_node}/" \
+        s = f"{config.root}/reports/{config.dataset}/val_node_{config.validation_node}/stats_before_{config.stats_before}/" \
             f"{config.data_distribution}_Tstar_{config.T_star}_{config.model}_{config.optimizer}_{config.learning_rate}/" \
             f"cfg{config.cfg_scale}"
     except:
 
-        s = f"{config.root}/reports/{config.dataset}/stats_before_{config.stats_before}/val_node_{config.validation_node}/" \
+        s = f"{config.root}/reports/{config.dataset}/val_node_{config.validation_node}/stats_before_{config.stats_before}/" \
             f"{config.data_distribution}_{config.model}_{config.optimizer}_{config.learning_rate}/" \
             f"cfg{config.cfg_scale}"
 

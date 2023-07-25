@@ -11,6 +11,8 @@ from FL import FL_train
 # todo local accuracy, when test on client
 # todo batch normalization
 # todo find reports/ ! -name '*.npz' -type f | xargs cp --parents -t reports/cifar10/to_copy
+# todo  grep -H star *.py
+
 FLAGS = flags.FLAGS
 config_flags.DEFINE_config_file("config", None, "Training configuration.", lock_config=True)
 # flags.DEFINE_string("model", None, "model.")
