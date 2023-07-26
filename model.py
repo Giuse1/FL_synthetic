@@ -76,13 +76,20 @@ def init_model(config):
 
     if config.model == "resnet18":
         model = torchvision.models.resnet18(pretrained=False)
+        in_features = model.fc.in_features
+        model.fc = torch.nn.Linear(in_features, out_features=10, bias=True)
 
     elif config.model == "resnet18_gn":
         model = get_resnet18_gn()
+        in_features = model.fc.in_features
+        model.fc = torch.nn.Linear(in_features, out_features=10, bias=True)
 
 
     elif config.model == "vgg11":
         model = torchvision.models.vgg11(pretrained=False)
+        in_features = model.classifier[6].in_features
+        model.classifier[6] = torch.nn.Linear(in_features, out_features=10, bias=True)
+
 
     elif config.model == "lenet":
         model = LeNet5(num_classes=10)

@@ -1,6 +1,5 @@
 import os
 import random
-
 import numpy as np
 import torch
 from torch.utils.data import Dataset
@@ -17,7 +16,7 @@ torch.cuda.manual_seed_all(SEED)
 torch.backends.cudnn.determinstic = True
 torch.backends.cudnn.benchmark = False
 
-NUM_WORKERS = 2
+NUM_WORKERS = 1
 PIN_MEMORY = True
 
 

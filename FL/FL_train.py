@@ -1,9 +1,8 @@
-import os
 import utils
 from FL.FL_user import User
 import copy
 import torch
-import FL.torch_dataset as datasets
+import torch_dataset as datasets
 import model
 import numpy as np
 import random

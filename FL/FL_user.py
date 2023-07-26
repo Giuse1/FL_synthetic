@@ -22,7 +22,8 @@ class User(object):
         self.valloader = valloader
 
         self.classes = list(set(list(itemgetter(*self.trainloader.dataset.indices)(self.trainloader.dataset.dataset.targets))))
-
+        if len(self.classes) != 10:
+            print("USING MAKSED CROSS-ENTROPY LOSS")
         self.id = index
         self.device = config.device
         self.criterion = nn.CrossEntropyLoss()
@@ -98,6 +99,12 @@ class User(object):
             for (i, data) in enumerate(self.valloader):
                 inputs, labels = data[0].to(self.device), data[1].to(self.device)
                 outputs = model(inputs)
+
+                if len(self.classes) != 10:
+                    label_mask = torch.zeros(10, device=self.config.device)
+                    label_mask[self.classes] = 1
+                    outputs = outputs.masked_fill(label_mask == 0, 0)
+
                 loss = self.criterion(outputs, labels)
                 _, preds = torch.max(outputs, 1)
 

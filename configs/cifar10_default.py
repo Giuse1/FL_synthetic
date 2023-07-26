@@ -7,7 +7,7 @@ def get_default_config():
     config = ml_collections.ConfigDict()
 
     config.seed = 0
-    config.root = "/home/giuse/Desktop/FL"  # "/home/giuse/Desktop/FL"  # "FL_diffusion"  # todo
+    config.root = "/home/gdigiacomo/FL_diffusion"  # "/home/giuse/Desktop/FL"  # "FL_diffusion"  # todo
 
     config.stats_before = False
 
@@ -16,11 +16,11 @@ def get_default_config():
     config.total_num_users = 10
     config.users_per_round = 10
 
-    config.num_rounds = 100
+    config.num_rounds = 150
     config.local_epochs = 1
 
     config.optimizer = "Adam"
-    config.learning_rate = 0.0001  # todo
+    config.learning_rate = 0.0001
     config.decay = 1  # to consider
 
     config.batch_size = 64  # todo
@@ -34,27 +34,40 @@ def get_default_config():
 
 
 def get_config_folder(config):
+    if config.stats_before is True:
+        stats_before = "stats_before_"
+    else:
+        stats_before = ""
 
-    try:
-        s = f"{config.root}/reports/{config.dataset}/val_node_{config.validation_node}/stats_before_{config.stats_before}/" \
-            f"{config.data_distribution}_Tstar_{config.T_star}_{config.model}_{config.optimizer}_{config.learning_rate}/" \
-            f"cfg{config.cfg_scale}"
-    except:
+    if "T_star" in config:
+        tstar_str = f"Tstar_{config.T_star}_"
+    else:
+        tstar_str = ""
 
-        s = f"{config.root}/reports/{config.dataset}/val_node_{config.validation_node}/stats_before_{config.stats_before}/" \
-            f"{config.data_distribution}_{config.model}_{config.optimizer}_{config.learning_rate}/" \
-            f"cfg{config.cfg_scale}"
+    if "algorithm" in config:
+        alg_str = f"{config.algorithm}_"
+    else:
+        alg_str = ""
+
+    if "masked" in config:
+        masked_str = f"maskedCE_"
+    else:
+        masked_str = ""
+
+    s = f"{config.root}/reports/{config.dataset}/val_node_{config.validation_node}/{stats_before}" \
+        f"{config.data_distribution}_{alg_str}{masked_str}{tstar_str}{config.model}_{config.optimizer}_{config.learning_rate}/" \
+        f"cfg{config.cfg_scale}"
 
     return s
 
 
 def plot_config(config):
-    os.makedirs(f"{config.folder_logger}/class_statistics/train", exist_ok=True)
-    os.makedirs(f"{config.folder_logger}/class_statistics/test_real", exist_ok=True)
-    os.makedirs(f"{config.folder_logger}/class_statistics/test_synthetic", exist_ok=True)
+    os.makedirs(f"{config.folder_logger}/class_statistics/train", exist_ok=False)
+    os.makedirs(f"{config.folder_logger}/class_statistics/test_real", exist_ok=False)
+    os.makedirs(f"{config.folder_logger}/class_statistics/test_synthetic", exist_ok=False)
 
-    os.makedirs(f"{config.folder_logger}/class_statistics/validation_before_training", exist_ok=True)
-    os.makedirs(f"{config.folder_logger}/class_statistics/validation_after_training", exist_ok=True)
+    os.makedirs(f"{config.folder_logger}/class_statistics/validation_before_training", exist_ok=False)
+    os.makedirs(f"{config.folder_logger}/class_statistics/validation_after_training", exist_ok=False)
 
     print(f"total_num_users: {config.total_num_users}")
     print(f"users_per_round: {config.users_per_round}")
