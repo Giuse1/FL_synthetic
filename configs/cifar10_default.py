@@ -7,7 +7,7 @@ def get_default_config():
     config = ml_collections.ConfigDict()
 
     config.seed = 0
-    config.root = "/home/gdigiacomo/FL_diffusion"  # "/home/giuse/Desktop/FL"  # "FL_diffusion"  # todo
+    config.root = "/home/giuse/Desktop/FL" #"/home/gdigiacomo/FL_diffusion"  # "/home/giuse/Desktop/FL"  # "FL_diffusion"  # todo
 
     config.stats_before = False
 
@@ -62,12 +62,12 @@ def get_config_folder(config):
 
 
 def plot_config(config):
-    os.makedirs(f"{config.folder_logger}/class_statistics/train", exist_ok=False)
-    os.makedirs(f"{config.folder_logger}/class_statistics/test_real", exist_ok=False)
-    os.makedirs(f"{config.folder_logger}/class_statistics/test_synthetic", exist_ok=False)
+    os.makedirs(f"{config.folder_logger}/class_statistics/train", exist_ok=True)
+    os.makedirs(f"{config.folder_logger}/class_statistics/test_real", exist_ok=True)
+    os.makedirs(f"{config.folder_logger}/class_statistics/test_synthetic", exist_ok=True)
 
-    os.makedirs(f"{config.folder_logger}/class_statistics/validation_before_training", exist_ok=False)
-    os.makedirs(f"{config.folder_logger}/class_statistics/validation_after_training", exist_ok=False)
+    os.makedirs(f"{config.folder_logger}/class_statistics/validation_before_training", exist_ok=True)
+    os.makedirs(f"{config.folder_logger}/class_statistics/validation_after_training", exist_ok=True)
 
     print(f"total_num_users: {config.total_num_users}")
     print(f"users_per_round: {config.users_per_round}")

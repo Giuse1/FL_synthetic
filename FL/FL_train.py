@@ -60,8 +60,12 @@ def train_model(config):
             local_weights.append(copy.deepcopy(w))  # todo
             samples_per_client.append(local_total)
 
+
         global_weights = average_weights(local_weights, samples_per_client)
         global_model.load_state_dict(global_weights)
+
+        print(global_model._modules['features']._modules['0'].weight.grad)
+
 
         # test on original, i.e., real, testset
 

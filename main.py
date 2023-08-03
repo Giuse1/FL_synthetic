@@ -8,6 +8,7 @@ from ml_collections.config_flags import config_flags
 
 from FL import FL_train
 from fedBN import fedBN_train
+from fedBN import heteroFL_train
 
 # todo local accuracy, when test on client
 # todo batch normalization
@@ -33,10 +34,14 @@ def main(argv):
     torch.backends.cudnn.determinstic = True
     torch.backends.cudnn.benchmark = False
 
+    FLAGS.config.algorithm = "heteroFL"
 
     if FLAGS.config.model == "resnet18":
-        if FLAGS.config.algorithm == "fedbn":
+        if FLAGS.config.algorithm == "fedbn" or FLAGS.config.algorithm =="siloer":
+            print(FLAGS.config.algorithm)
             fedBN_train.train_model(FLAGS.config)
+        elif FLAGS.config.algorithm == "heteroFL":
+            heteroFL_train.train_model(FLAGS.config)
         else:
             FL_train.train_model(FLAGS.config)
 

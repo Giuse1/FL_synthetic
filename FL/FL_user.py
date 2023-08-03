@@ -57,7 +57,7 @@ class User(object):
                 optimizer.zero_grad()
                 log_probs = model(images)
 
-                if len(self.classes) != 10:
+                if "masked" in self.config and len(self.classes) != 10:
                     label_mask = torch.zeros(10, device=self.config.device)
                     label_mask[self.classes] = 1
                     log_probs = log_probs.masked_fill(label_mask == 0, 0)
@@ -100,7 +100,7 @@ class User(object):
                 inputs, labels = data[0].to(self.device), data[1].to(self.device)
                 outputs = model(inputs)
 
-                if len(self.classes) != 10:
+                if "masked" in self.config and len(self.classes) != 10:
                     label_mask = torch.zeros(10, device=self.config.device)
                     label_mask[self.classes] = 1
                     outputs = outputs.masked_fill(label_mask == 0, 0)
